@@ -24,10 +24,6 @@ class MainActivity : AppCompatActivity(), MainView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        adapter = QuestionAdapter()
-
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adapter
 
         presenter = MainPresenter(
             this, PreferenceLocalRepository(
@@ -37,8 +33,13 @@ class MainActivity : AppCompatActivity(), MainView {
                 )
             ), RetrofitRemoteRepository(RetrofitFactory.makeRetrofitService())
         )
+        adapter = QuestionAdapter(presenter)
+
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
 
         presenter.init()
+
     }
 
     override fun showQuestions(remoteData: List<Question>) {
@@ -67,6 +68,6 @@ class MainActivity : AppCompatActivity(), MainView {
     }
 
     override fun showScore(score: Int) {
-        txtLastScore.text = txtLastScore.text.toString() + score
+        txtLastScore.text = getString(R.string.last_score) + score
     }
 }

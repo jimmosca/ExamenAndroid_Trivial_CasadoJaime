@@ -1,6 +1,6 @@
 package com.jca.examenandroid_trivial.ui.main
 
-import android.util.Log
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +12,7 @@ import com.jca.examenandroid_trivial.R
 import com.jca.examenandroid_trivial.ui.model.Question
 
 
-class QuestionAdapter() : RecyclerView.Adapter<QuestionViewHolder>() {
+class QuestionAdapter(private val presenter: MainPresenter) : RecyclerView.Adapter<QuestionViewHolder>() {
     var questionList: List<Question> = listOf()
 
     fun addList(questions: List<Question>) {
@@ -21,7 +21,7 @@ class QuestionAdapter() : RecyclerView.Adapter<QuestionViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuestionViewHolder {
-        return QuestionViewHolder.from(parent)
+        return QuestionViewHolder.from(parent, presenter)
     }
 
     override fun getItemCount() = questionList.size
@@ -30,7 +30,28 @@ class QuestionAdapter() : RecyclerView.Adapter<QuestionViewHolder>() {
         holder.bind(questionList[position])
 }
 
-class QuestionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+class QuestionViewHolder(val view: View, val presenter: MainPresenter) : RecyclerView.ViewHolder(view),
+    HolderView {
+    override fun resetBackGround() {
+        val selectedButton = view.findViewById<RadioButton>(radioGroup.checkedRadioButtonId)
+        selectedButton.setBackgroundColor(Color.WHITE)
+        radioGroup.clearCheck()
+    }
+
+    override fun verifyResponse(): Int {
+        val selectedButton = view.findViewById<RadioButton>(radioGroup.checkedRadioButtonId)
+        if (selectedButton!=null){
+        return if (selectedButton.text.equals(correctAnswer)){
+            selectedButton.setBackgroundColor(Color.GREEN)
+            1
+        }else{
+            selectedButton.setBackgroundColor(Color.RED)
+            0
+        }}else
+            return 0
+
+
+    }
 
     private val txtQuestion: TextView = view.findViewById(R.id.questionText)
     private val radioGroup: RadioGroup = view.findViewById(R.id.radioGroup)
@@ -38,6 +59,8 @@ class QuestionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val secondAnswer: RadioButton = view.findViewById(R.id.secondRadioButton)
     private val thirdAnswer: RadioButton = view.findViewById(R.id.thirdRadioButton)
     private val forthAnswer: RadioButton = view.findViewById(R.id.forthRadioButton)
+
+    lateinit var correctAnswer: String
 
     fun bind(question: Question) {
 
@@ -47,7 +70,7 @@ class QuestionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             question.incorrect_answers[1],
             question.incorrect_answers[2]
         )
-
+        correctAnswer = question.correct_answer
         if (question.answersList.isNotEmpty()) {
             question.answersList.shuffle()
         }
@@ -60,15 +83,16 @@ class QuestionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         thirdAnswer.text = question.answersList[2]
         forthAnswer.text = question.answersList[3]
 
+        presenter.addViewHolder(this)
 
     }
 
 
     companion object {
-        fun from(parent: ViewGroup): QuestionViewHolder {
+        fun from(parent: ViewGroup, presenter: MainPresenter): QuestionViewHolder {
             val movieItem =
                 LayoutInflater.from(parent.context).inflate(R.layout.question_item, parent, false)
-            return QuestionViewHolder(movieItem)
+            return QuestionViewHolder(movieItem, presenter)
         }
     }
 }
