@@ -12,7 +12,8 @@ import com.jca.examenandroid_trivial.R
 import com.jca.examenandroid_trivial.ui.model.Question
 
 
-class QuestionAdapter(private val presenter: MainPresenter) : RecyclerView.Adapter<QuestionViewHolder>() {
+class QuestionAdapter(private val presenter: MainPresenter) :
+    RecyclerView.Adapter<QuestionViewHolder>() {
     var questionList: List<Question> = listOf()
 
     fun addList(questions: List<Question>) {
@@ -30,7 +31,8 @@ class QuestionAdapter(private val presenter: MainPresenter) : RecyclerView.Adapt
         holder.bind(questionList[position])
 }
 
-class QuestionViewHolder(val view: View, val presenter: MainPresenter) : RecyclerView.ViewHolder(view),
+class QuestionViewHolder(val view: View, val presenter: MainPresenter) :
+    RecyclerView.ViewHolder(view),
     HolderView {
     override fun resetBackGround() {
         val selectedButton = view.findViewById<RadioButton>(radioGroup.checkedRadioButtonId)
@@ -40,14 +42,15 @@ class QuestionViewHolder(val view: View, val presenter: MainPresenter) : Recycle
 
     override fun verifyResponse(): Int {
         val selectedButton = view.findViewById<RadioButton>(radioGroup.checkedRadioButtonId)
-        if (selectedButton!=null){
-        return if (selectedButton.text.equals(correctAnswer)){
-            selectedButton.setBackgroundColor(Color.GREEN)
-            1
-        }else{
-            selectedButton.setBackgroundColor(Color.RED)
-            0
-        }}else
+        if (selectedButton != null) {
+            return if (selectedButton.text.equals(correctAnswer)) {
+                selectedButton.setBackgroundColor(Color.GREEN)
+                1
+            } else {
+                selectedButton.setBackgroundColor(Color.RED)
+                0
+            }
+        } else
             return 0
 
 
